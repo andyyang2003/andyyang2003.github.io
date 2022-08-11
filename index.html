@@ -1,1 +1,207 @@
-<h1>HI WHORES</h1>
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--CSS Styles -->
+    <link rel="stylesheet" href="assets/css/styles.css" />
+
+    <!-- Favicons -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/icons/favicon-32x32.png"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Animate CSS CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <title>Andy Yang | Software Engineer</title>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <h1>A N D Y Y A N G</h1>
+      <ul class="navigation">
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#skills" class="nav-link">Skills</a></li>
+        <li><a href="#projects" class="nav-link">Projects</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+      <button class="burger-menu" id="burger-menu">
+        <ion-icon class="bars" name="menu-outline"></ion-icon>
+      </button>
+    </nav>
+    
+    <section class="andy-sec">
+    <div class="andy-container">
+      <div class="animate__animated animate__fadeIn">
+      <h2 class=>Hello, I'm</h2>
+      </div>
+      <div class="animate__animated animate__fadeIn animate__delay-1s">
+      <h1 class="andy-title">Andy</h1>
+      </div>
+    </div>
+    </section>
+    <!-- bio section -->
+    <section class="hero" id="about">   
+      <div class="flex-bio fade">
+      <div class="bio animate__animated animate__shakeY">
+        <p class="bio-text">
+          I am currently a student attending the University of California Irvine studying Computer Engineering. I am fluent in multiple 
+          programming languages and have a 3.3 GPA.
+        </p>
+      </div>
+      <div class="bio-1">
+        <p class="bio-1-text">
+          My journey in programming started at the age of eleven, when I built my first computer.
+          I experimented in <span style="color:#4756df">HTML</span>, <span style="color:#4756df">CSS</span>, 
+          and <span style="color:#4756df">JavaScript</span> until I was fourteen, where I was introduced to 
+          <span style="color:#4756df">Python</span> and 
+          <span style="color:#4756df">C++</span>.
+        </p>
+      </div>
+      <div class="bio-2">
+        <p class="bio-2-text">
+          As of now, I am in school full time expanding my programming arsenal. Working on as many side projects and 
+          applying my teachings is my main focus, as well as achieving my first internship in any 
+          <span style="color:#4756df">software</span> or <span style="color:#4756df">hardware</span> engineering position. 
+        </p>
+      </div>
+      </div>
+      <img src="assets/images/baby.jpg" alt="baby-asian" loading="lazy" class="hero-img"/>
+    </section>
+
+
+
+    <!-- Skills section -->
+    <section class="skills" id="skills">
+      <!--skill animate__animated animate__bounceInLeft-->
+      <div id="skill-anim" class="skill-text">
+      <h2 class="skill-header">My Top Skills</h2>
+      </div>
+      <div class="skills-wrapper">
+        <div class="first-set animate__animated animate__pulse">
+          <img src="assets/icons/icons8-html-5.svg" alt="html icon" loading="lazy" class="icon icon-card">
+          <img src="assets/icons/icons8-css3.svg" alt="css icon" loading="lazy" class="icon icon-card">
+          <img src="assets/icons/icons8-javascript.svg" alt="js icon" loading="lazy" class="icon icon-card">
+        </div>
+        <div class="second-set animate__animated animate__pulse">
+          <img src="assets/icons/icons8-python.svg" alt="python icon" loading="lazy" class="icon icon-card">
+          <img src="assets/icons/xilinx-vector-logo.svg" alt="xilinx icon" loading="lazy" class="icon icon-card">
+          <img src="assets/icons/icons8-git.svg" alt="git icon" loading="lazy" class="icon icon-card">
+        </div>
+      </div>
+    </section>
+    <!-- Projects section -->
+    <section class="projects" id="projects">  
+      <h2 class="projects-title">Recent Projects</h2>
+      <div class="projects-container">
+        <div class="project-container project-card">
+          <img src="assets/images/expenseTracker.png" alt="expense-tracker" loading="lazy" class="project-pic">
+          <h3 class="project-title">Expense Tracker</h3>
+          <p class="project-details">
+            i ate a big ol butt
+          </p>
+          <a href="#" target="_blank" class="project-link"> Check it out</a>
+        </div>
+
+        <div class="project-container project-card">
+          <img src="assets/images/netflixClone.png" alt="netflix-clone" loading="lazy" class="project-pic">
+          <h3 class="project-title">Netflix Clone</h3>
+          <p class="project-details">
+            i ate a big ol nut flux
+          </p>
+          <a href="#" target="_blank" class="project-link"> Check it out</a>
+        </div>
+
+        <div class="project-container project-card">
+          <img src="assets/images/greenyEarth.png" alt="greeny-earth" loading="lazy" class="project-pic">
+          <h3 class="project-title">greeny earth</h3>
+          <p class="project-details">
+            greeny earth
+          </p>
+          <a href="#" target="_blank" class="project-link"> Check it out</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact section -->
+    <section class="contact" id="contact">
+      <h2>Contact Me</h2>
+      <div class="contact-form-container">
+        <div class="contact-form">
+          <form action="https://formspree.io/f/xnqweeny" method="POST"> <!-- set up on formspree-->
+
+            <div class="form-control">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="sender-name" placeholder="Enter Your Name" class="input-field" required>
+            </div>
+            
+            <div class="form-control">
+              <label for="email">Email</label>
+              <input type="text" id="email" name="sender-email" placeholder="Enter Your email" class="input-field" required>
+            </div>
+
+            <div class="form-control">
+              <label for="message">Message</label>
+              <textarea type="text" id="message" name="message" placeholder="Enter Your Message" cols="60" rows="10" class="input-field" required></textarea>
+            </div>
+            <input type="submit" value="Submit" id="submit-btn" class="submit-btn">
+          </form>
+        </div>
+      </div>
+
+    </section>
+    <!-- Social accounts - Fixed to the right -->
+    
+    <!-- Footer section -->
+    <footer>
+      <p class="copy">&copy; Copyright 2022</p>
+      <p class="copy">
+        Built with &#x2661; by <a href="https://twitter.com/andyyyang__" target="_blank"> Andy Yang </a>
+      </p>
+    </footer>
+
+    <!-- LOADING SCREEN-->
+    
+    <!-- second option -->
+    <div class="loader">
+      <div class="load-text">
+        <div class="loaded-text">A</div>
+        <div class="loading-text">NDY</div>
+      </div>
+    </div>
+
+    <!-- Website scripts -->
+    
+    <button class="back-to-top hidden" id="topbutton">
+      <svg xmlns="http://www.w3.org/2000/svg" class="up-button-icon " fill="none" viewbox="0 0 24 24" stroke="currentColor" stroke-width="2" alt="scroll-up">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
+      </svg>
+    </button>
+  
+    <script src="assets/js/app.js"></script>
+    <!-- Ion icons scripts -->
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+  </body>
+</html>
