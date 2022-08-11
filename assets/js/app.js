@@ -1,9 +1,10 @@
 // load screen
 $(window).on("load", function() {
+    const skill = document.querySelector('.icon-card')
+    skill.style.setProperty
+
     //load menu
     $(".loader-div").fadeOut(2000);
-
-    
     // hide button from scroll
     const showPx = 300;
     const backToTopButton = document.getElementById("topbutton")
@@ -49,9 +50,9 @@ $(window).on("load", function() {
             var objectBottom = $(this).offset().top + $(this).outerHeight();
             
             if (objectBottom < winBot) {
-                if ($(this).css("opacity")==0) {$(this).fadeTo(500,1);}
+                if ($(this).css("opacity")==0) {$(this).fadeTo(250,1);}
             } else {
-                if ($(this).css("opacity")==1) {$(this).fadeTo(500,0);}
+                if ($(this).css("opacity")==1) {$(this).fadeTo(250,0);}
             }
         });
     }).scroll();    
