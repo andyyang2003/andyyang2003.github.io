@@ -1,7 +1,6 @@
 // load screen
 $(window).on("load", function() {
-    const skill = document.querySelector('.icon-card')
-    skill.style.setProperty
+    
 
     //load menu
     $(".loader-div").fadeOut(2000);
@@ -42,6 +41,8 @@ $(window).on("load", function() {
     navLink.forEach((link) => link.addEventListener("click", () => {
         ul.classList.remove("show");
     }) );
+
+
 
     // fading divs
     $(window).scroll(function () {
