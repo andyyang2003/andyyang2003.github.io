@@ -57,14 +57,15 @@ html {
     transform: translateX(0);
   }
 
-  
-
   .hero {
     margin-top: -4rem;
     flex-direction: column;
     gap: 0;
   }
-
+  .hero-img {
+    width: 100%;
+    margin-left: 50px;
+  }
   .bio  {
     margin-top: -7rem;
     width: 20.5rem;
