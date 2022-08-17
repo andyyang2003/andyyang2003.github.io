@@ -33,6 +33,9 @@ html {
   nav {
     padding: 1.5rem 1rem;
   }
+  .bigword {
+    width: 50%;
+  }
   nav ul {
     position: fixed;
     background-color: var(--bg-color);
