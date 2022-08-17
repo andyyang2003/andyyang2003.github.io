@@ -43,7 +43,7 @@ $(window).on("load", function() {
     }) );
 
 
-
+/*
     // fading divs
     $(window).scroll(function () {
         var winBot = $(this).scrollTop() + $(this).innerHeight();
@@ -55,8 +55,8 @@ $(window).on("load", function() {
             } else {
                 if ($(this).css("opacity")==1) {$(this).fadeTo(250,0);}
             }
-        });
-    }).scroll();    
+        }); 
+    }).scroll(); */   
 }); 
 
 

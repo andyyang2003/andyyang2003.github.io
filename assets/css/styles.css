@@ -29,7 +29,7 @@ html {
   /* border: 2px solid red; */
 }
 
-@media screen and (max-width: 720px) {
+@media screen and (min-width: 720px) {
   nav {
     padding: 1.5rem 1rem;
   }
@@ -60,7 +60,16 @@ html {
     gap: 0;
   }
 
-  .bio 
+  .bio  {
+    margin-top: -7rem;
+    width: 20.5rem;
+  }
+
+  .icon {
+    width: 5.875rem;
+    height: 5.25rem;
+  }
+
 }
 
 h2 {
@@ -567,7 +576,7 @@ footer {
   opacity: 0%;
 }
 
-.fade {
+.frade {
   background-color: var(--bg-color);
   opacity: 1;
 }
