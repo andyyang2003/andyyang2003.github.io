@@ -27,23 +27,9 @@ $(window).on("load", function() {
     };
     backToTopButton.addEventListener("click", goToTop);
 
-    //hamburger 
-
-    const burger = document.querySelector("#burger-menu");
-    const ul = document.querySelector("nav ul");
-    const nav = document.querySelector("nav"); 
-
-    burger.addEventListener("click", () => {
-        ul.classList.toggle("show");
-    });
-
-    const navLink = document.querySelectorAll(".nav-link");
-    navLink.forEach((link) => link.addEventListener("click", () => {
-        ul.classList.remove("show");
-    }) );
+   
 
 
-/*
     // fading divs
     $(window).scroll(function () {
         var winBot = $(this).scrollTop() + $(this).innerHeight();
@@ -56,10 +42,8 @@ $(window).on("load", function() {
                 if ($(this).css("opacity")==1) {$(this).fadeTo(250,0);}
             }
         }); 
-    }).scroll(); */   
+    }).scroll(); 
 }); 
-
-
 
 
 
