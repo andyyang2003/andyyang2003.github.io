@@ -46,7 +46,7 @@ h2 {
   text-align: center;
 }
 
-body {
+html, body {
   margin: 0;
   height: 100%;
 }
@@ -119,7 +119,7 @@ body {
   margin-top: 8px;
 }
 
-#menu-toggle:checked + .menu-button-container .menu-button::before {
+#menu-toggle:checked + .menu-button-container .menu-button:before {
   margin-top: 0px;
   transform: rotate(405deg);
 }
@@ -188,7 +188,8 @@ body {
   }
   .hero-img {
     max-width: 100%;
-    margin-left: 50px;
+    margin-left: 100px;
+    display: flex;
   }
   .bio  {
     margin-top: -7rem;
