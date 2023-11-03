@@ -9,7 +9,16 @@ Andy Yang's website portfolio
 ## Github repo
 
 This is the [link](https://github.com/Ksound22/developer-portfolio) to the Github repo of the project
-
+# TO DO LIST
+- time line page
+    - with assets videos
+    - minecraft command blocks, redstone, and java mod,
+    - tic tac toe, c++ exploration
+    - python, c++ videos
+    - flappy bird
+    - html css java self study
+    - python again, digital design, vhdl + verilog, machine, assembly, java
+    
 
 ## Tech Stack
 
