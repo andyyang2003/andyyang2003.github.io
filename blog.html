@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andys blog</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <style>
+      /* Ensure bullet points are visible */
+      ul {
+        list-style-type: disc;
+        /* Use default bullet points */
+        padding-left: 40px;
+        /* Add padding to align bullets properly */
+      }
+
+      li {
+        margin-bottom: 10px;
+        /* Optional: Add spacing between list items */
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <!-- Navbar -->
+      <nav class="top-nav">
+        <h1 class="bigword"><a href="https://andyyang2003.github.io/">A N D Y Y A N G</h1>
+        <!-- burger -->
+        <input id="menu-toggle" type="checkbox" />
+        <label class='menu-button-container' for="menu-toggle">
+          <div class="menu-button"></div>
+        </label>
+        <ul class="menu">
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#blog" class="nav-link">Blog</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+          <li><a href="#timeline" class="nav-link">Timeline</a></li>
+        </ul>
+
+      </nav>
+    </header>
+    <main>
+      <section class="blog-page">
+        <div class="blog-entries">
+          <article class="blog-entry">
+            <h2>MM/DD/YYYY</h2>
+            <p>
+              paragraph text
+            </p>
+            <h3>
+              Current Tasks
+            </h3>
+            <ul>
+              <li>
+                task 1
+              </li>
+              <li>
+              </li>
+            </ul>
+            <p><small>Posted on: <time datetime="YYYY-MM-DD">month date, year</time></small></p>
+          </article>
+          <article class="blog-entry">
+            <h2>11/10/2025</h2>
+            <p>I really need to make this blog post area better. maybe add some backend to store the entries and
+              dynamically load them. I am currently going to work on my MMA model.
+            </p>
+            <h3>
+              Current Tasks
+            </h3>
+            <ul>
+
+            </ul>
+            <p><small>Posted on: <time datetime="2025-11-10">November 10, 2025</time></small></p>
+          </article>
+          <article class="blog-entry">
+            <h2>11/08/2025</h2>
+            <p>I am currently trying to maintain a blog of my thoughts on my portfolio website because I think its funny
+              and reminds me of
+              the social network. Although I don't think I should really match his behaviour, maybe it will help me have
+              some ideas.
+            </p>
+            <h3>
+              Current Tasks
+            </h3>
+            <ul>
+              <li>
+                Finish working on my portfolio website. I need to finish the timeline page, redo the styling, and update
+                it to encorporate proper tech stack. Probably.
+              </li>
+              <li>
+                Learn more about Isaac Sim and how to use it for robotics simulation.
+              </li>
+            </ul>
+            <p><small>Posted on: <time datetime="2025-11-08">November 8, 2025</time></small></p>
+          </article>
+
+        </div>
+      </section>
+    </main>
+    <!-- Footer section -->
+    <footer>
+      <p class="copy">&copy; Copyright 2022</p>
+      <p class="copy">
+        Built with &#x2661; by <a href="https://twitter.com/andyyyang__" target="_blank"> <span style="color:lavender">
+            Andy Yang </span> </a>
+      </p>
+    </footer>
+  </body>
+
+</html>
