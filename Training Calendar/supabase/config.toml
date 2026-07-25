@@ -1,0 +1,4 @@
+project_id = "PASTE_YOUR_PROJECT_REF"
+
+[functions.training-calendar]
+verify_jwt = false

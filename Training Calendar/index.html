@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Training Calendar</title>
+  <style>
+    :root {
+      --bg: #f6f6f3;
+      --panel: #ffffff;
+      --text: #1f1f1f;
+      --muted: #777;
+      --border: #ddddda;
+      --today: #fff5d6;
+      --muay: #d94a4a;
+      --bjj: #4a6fd9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    button, input, textarea { font: inherit; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    aside {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 22px;
+    }
+
+    aside h1 {
+      margin: 0 0 24px;
+      font-size: 20px;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    .sync-panel {
+      margin-bottom: 18px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafaf8;
+    }
+
+    .sync-panel label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .sync-row {
+      display: flex;
+      gap: 7px;
+    }
+
+    .sync-row input {
+      min-width: 0;
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px;
+    }
+
+    .sync-row button {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 12px;
+      background: #222;
+      color: white;
+      cursor: pointer;
+    }
+
+    .sync-status {
+      min-height: 16px;
+      margin-top: 7px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field textarea {
+      width: 100%;
+      min-height: 90px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+
+
+    .recurring h2 {
+      margin: 0 0 14px;
+      font-size: 15px;
+    }
+
+    .training-group {
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafaf8;
+      overflow: hidden;
+    }
+
+    .training-group summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      user-select: none;
+      background: #f2f2ef;
+    }
+
+    .training-group[open] summary {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .training-group .field,
+    .training-group .schedule-group {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+
+    .training-group .field {
+      padding-top: 14px;
+    }
+
+    .training-group .schedule-group {
+      padding-bottom: 14px;
+    }
+
+    .schedule-group {
+      margin-bottom: 16px;
+    }
+
+    .schedule-group strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .weekday-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      font-size: 12px;
+    }
+
+    .weekday-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .apply-schedule {
+      width: 100%;
+      margin-top: 4px;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px;
+      background: #222;
+      color: white;
+      cursor: pointer;
+    }
+
+    .apply-schedule:hover {
+      background: #3a3a3a;
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+      margin-top: 22px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    .dot.muay { background: var(--muay); }
+    .dot.bjj { background: var(--bjj); }
+
+    main {
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar h2 {
+      margin: 0;
+      min-width: 190px;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    .toolbar button,
+    .modal-actions button {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .toolbar button:hover,
+    .modal-actions button:hover {
+      background: #f0f0ed;
+    }
+
+    .weekdays,
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(110px, 1fr));
+    }
+
+    .weekdays {
+      border: 1px solid var(--border);
+      border-bottom: 0;
+      background: var(--panel);
+    }
+
+    .weekday {
+      padding: 10px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+    }
+
+    .weekday:last-child { border-right: 0; }
+
+    .calendar {
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .day {
+      min-height: 142px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 9px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .day:hover { background: #fafaf8; }
+    .day.empty { background: #f1f1ef; cursor: default; }
+    .day.today { background: var(--today); }
+
+    .day-number {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 9px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .day-number.muay {
+      background: var(--muay);
+      color: white;
+    }
+
+    .day-number.bjj {
+      background: var(--bjj);
+      color: white;
+    }
+
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 12px;
+      line-height: 1.3;
+      color: #555;
+    }
+
+    .task-row input {
+      margin-top: 1px;
+      flex: 0 0 auto;
+    }
+
+    .task-text,
+    .training-objective {
+      overflow-wrap: anywhere;
+    }
+
+    .training-objective {
+      margin-bottom: 8px;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .training-objective.muay {
+      color: var(--muay);
+    }
+
+    .training-objective.bjj {
+      color: var(--bjj);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      width: min(420px, 100%);
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal h3 { margin: 0 0 16px; }
+
+    .modal input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .check-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .modal-actions .primary {
+      background: #222;
+      color: white;
+      border-color: #222;
+    }
+
+    @media (max-width: 850px) {
+      .app { grid-template-columns: 1fr; }
+
+      aside {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      main { overflow-x: auto; }
+
+      .weekdays,
+      .calendar {
+        grid-template-columns: repeat(7, minmax(90px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <h1>Training Calendar</h1>
+
+      <div class="sync-panel">
+        <label for="calendarCode">Calendar code</label>
+        <div class="sync-row">
+          <input id="calendarCode" type="text" maxlength="80"
+                 placeholder="Enter a save code" />
+          <button id="saveCode">Save</button>
+          <button id="loadCode">Load</button>
+        </div>
+        <div id="syncStatus" class="sync-status">
+          Edit the calendar first, then save it under a code—or enter a code and load it.
+        </div>
+      </div>
+
+      <details class="training-group" open>
+        <summary>Muay Thai</summary>
+
+        <div class="field">
+          <label for="muayThaiGoal">Monthly objective</label>
+          <textarea id="muayThaiGoal" placeholder="Example: Attend 8 sessions and improve my teep."></textarea>
+        </div>
+
+        <div class="schedule-group">
+          <strong>Recurring days</strong>
+          <div class="weekday-options" id="muaySchedule">
+            <label><input type="checkbox" value="0"> Sunday</label>
+            <label><input type="checkbox" value="1"> Monday</label>
+            <label><input type="checkbox" value="2"> Tuesday</label>
+            <label><input type="checkbox" value="3"> Wednesday</label>
+            <label><input type="checkbox" value="4"> Thursday</label>
+            <label><input type="checkbox" value="5"> Friday</label>
+            <label><input type="checkbox" value="6"> Saturday</label>
+          </div>
+        </div>
+      </details>
+
+      <details class="training-group" open>
+        <summary>BJJ</summary>
+
+        <div class="field">
+          <label for="bjjGoal">Monthly objective</label>
+          <textarea id="bjjGoal" placeholder="Example: Attend 8 sessions and improve guard retention."></textarea>
+        </div>
+
+        <div class="schedule-group">
+          <strong>Recurring days</strong>
+          <div class="weekday-options" id="bjjSchedule">
+            <label><input type="checkbox" value="0"> Sunday</label>
+            <label><input type="checkbox" value="1"> Monday</label>
+            <label><input type="checkbox" value="2"> Tuesday</label>
+            <label><input type="checkbox" value="3"> Wednesday</label>
+            <label><input type="checkbox" value="4"> Thursday</label>
+            <label><input type="checkbox" value="5"> Friday</label>
+            <label><input type="checkbox" value="6"> Saturday</label>
+          </div>
+        </div>
+      </details>
+
+      <button id="applySchedule" class="apply-schedule">
+        Apply recurring schedule to current month
+      </button>
+
+      <button id="clearAll" class="apply-schedule" style="margin-top:10px;background:#b22222;">
+        Clear Current Month
+      </button>
+
+      <div class="legend">
+        <div class="legend-row"><span class="dot muay"></span> Red = Muay Thai</div>
+        <div class="legend-row"><span class="dot bjj"></span> Blue = BJJ</div>
+        <div>Click a day number to cycle: none → Muay Thai → BJJ.</div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button id="prevMonth" aria-label="Previous month">←</button>
+          <button id="todayButton">Today</button>
+          <button id="nextMonth" aria-label="Next month">→</button>
+        </div>
+        <h2 id="monthTitle"></h2>
+        <div></div>
+      </div>
+
+      <div class="weekdays">
+        <div class="weekday">Sun</div>
+        <div class="weekday">Mon</div>
+        <div class="weekday">Tue</div>
+        <div class="weekday">Wed</div>
+        <div class="weekday">Thu</div>
+        <div class="weekday">Fri</div>
+        <div class="weekday">Sat</div>
+      </div>
+
+      <div id="calendar" class="calendar"></div>
+    </main>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <h3 id="modalDate"></h3>
+
+      <div class="field">
+        <label for="taskInput">Daily reminder</label>
+        <input id="taskInput" type="text" placeholder="Example: Drill teep defense" />
+      </div>
+
+      <label class="check-line">
+        <input id="taskDone" type="checkbox" />
+        Daily task completed
+      </label>
+
+      <div class="modal-actions">
+        <button id="cancelButton">Cancel</button>
+        <button id="saveButton" class="primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Paste the deployed Supabase Edge Function URL here.
+    const API_URL = "https://lgxcmpyjmrjverrhxhtz.supabase.co/functions/v1/training-calendar";
+
+    let state = emptyState();
+    let currentDate = new Date();
+    currentDate.setDate(1);
+    let selectedDateKey = null;
+
+    const muayThaiGoal = document.getElementById("muayThaiGoal");
+    const bjjGoal = document.getElementById("bjjGoal");
+    const calendar = document.getElementById("calendar");
+    const monthTitle = document.getElementById("monthTitle");
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalDate = document.getElementById("modalDate");
+    const taskInput = document.getElementById("taskInput");
+    const taskDone = document.getElementById("taskDone");
+    const calendarCode = document.getElementById("calendarCode");
+    const syncStatus = document.getElementById("syncStatus");
+
+    const muayScheduleInputs = [...document.querySelectorAll("#muaySchedule input")];
+    const bjjScheduleInputs = [...document.querySelectorAll("#bjjSchedule input")];
+
+    document.getElementById("saveCode").addEventListener("click", saveCalendarByCode);
+    document.getElementById("loadCode").addEventListener("click", loadCalendarByCode);
+
+    calendarCode.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") loadCalendarByCode();
+    });
+
+    muayThaiGoal.addEventListener("input", () => {
+      state.muayThaiGoal = muayThaiGoal.value;
+      renderCalendar();
+      setDirtyStatus();
+    });
+
+    bjjGoal.addEventListener("input", () => {
+      state.bjjGoal = bjjGoal.value;
+      renderCalendar();
+      setDirtyStatus();
+    });
+
+    muayScheduleInputs.forEach(input => {
+      input.addEventListener("change", () => {
+        updateScheduleState();
+        setDirtyStatus();
+      });
+    });
+
+    bjjScheduleInputs.forEach(input => {
+      input.addEventListener("change", () => {
+        updateScheduleState();
+        setDirtyStatus();
+      });
+    });
+
+    document.getElementById("applySchedule").addEventListener("click", () => {
+      updateScheduleState();
+
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const key = dateKey(year, month, day);
+        const weekday = new Date(year, month, day).getDay();
+        const entry = state.days[key] || {};
+
+        if (state.muaySchedule.includes(weekday)) {
+          entry.trainingType = "muay";
+        } else if (state.bjjSchedule.includes(weekday)) {
+          entry.trainingType = "bjj";
+        } else {
+          entry.trainingType = "";
+        }
+
+        state.days[key] = entry;
+      }
+
+      renderCalendar();
+      setDirtyStatus();
+    });
+
+    document.getElementById("clearAll").addEventListener("click", () => {
+      if (!confirm("Clear the entire calendar currently shown? This does not erase the server copy unless you press Save afterward.")) return;
+
+      state = emptyState();
+      refreshControls();
+      renderCalendar();
+      setStatus("Calendar cleared locally. Press Save to overwrite the server copy.");
+    });
+
+    document.getElementById("prevMonth").addEventListener("click", () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    document.getElementById("todayButton").addEventListener("click", () => {
+      currentDate = new Date();
+      currentDate.setDate(1);
+      renderCalendar();
+    });
+
+    document.getElementById("cancelButton").addEventListener("click", closeModal);
+
+    modalBackdrop.addEventListener("click", event => {
+      if (event.target === modalBackdrop) closeModal();
+    });
+
+    document.getElementById("saveButton").addEventListener("click", () => {
+      if (!selectedDateKey) return;
+
+      state.days[selectedDateKey] = {
+        ...state.days[selectedDateKey],
+        task: taskInput.value.trim(),
+        taskDone: taskDone.checked
+      };
+
+      closeModal();
+      renderCalendar();
+      setDirtyStatus();
+    });
+
+    function emptyState() {
+      return {
+        muayThaiGoal: "",
+        bjjGoal: "",
+        muaySchedule: [],
+        bjjSchedule: [],
+        days: {}
+      };
+    }
+
+    function normalizeState(value) {
+      return {
+        muayThaiGoal: typeof value?.muayThaiGoal === "string" ? value.muayThaiGoal : "",
+        bjjGoal: typeof value?.bjjGoal === "string" ? value.bjjGoal : "",
+        muaySchedule: Array.isArray(value?.muaySchedule) ? value.muaySchedule : [],
+        bjjSchedule: Array.isArray(value?.bjjSchedule) ? value.bjjSchedule : [],
+        days: value?.days && typeof value.days === "object" ? value.days : {}
+      };
+    }
+
+    function normalizeCode(value) {
+      return value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+    }
+
+    function apiConfigured() {
+      return API_URL.startsWith("https://") && !API_URL.includes("PASTE_");
+    }
+
+    async function callApi(action, code, extra = {}) {
+      if (!apiConfigured()) {
+        throw new Error("Add your deployed Edge Function URL to index.html first.");
+      }
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, code, ...extra })
+      });
+
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {}
+
+      if (!response.ok) {
+        throw new Error(result.error || `Server returned ${response.status}.`);
+      }
+
+      return result;
+    }
+
+    async function saveCalendarByCode() {
+      const code = normalizeCode(calendarCode.value);
+
+      if (code.length < 8) {
+        setStatus("Use a code with at least 8 characters.", true);
+        return;
+      }
+
+      calendarCode.value = code;
+      setStatus("Saving full calendar…");
+
+      try {
+        await callApi("save_calendar", code, { calendar: state });
+        setStatus(`Full calendar saved under code: ${code}`);
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    }
+
+    async function loadCalendarByCode() {
+      const code = normalizeCode(calendarCode.value);
+
+      if (code.length < 8) {
+        setStatus("Use a code with at least 8 characters.", true);
+        return;
+      }
+
+      calendarCode.value = code;
+      setStatus("Loading full calendar…");
+
+      try {
+        const result = await callApi("load_calendar", code);
+
+        if (!result.exists) {
+          setStatus("No saved calendar exists for that code.", true);
+          return;
+        }
+
+        state = normalizeState(result.calendar);
+        refreshControls();
+        renderCalendar();
+        setStatus(`Full calendar loaded from code: ${code}`);
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    }
+
+    function setDirtyStatus() {
+      setStatus("Unsaved changes. Enter a code and press Save.");
+    }
+
+    function setStatus(message, isError = false) {
+      syncStatus.textContent = message;
+      syncStatus.style.color = isError ? "#b22222" : "";
+    }
+
+    function updateScheduleState() {
+      state.muaySchedule = muayScheduleInputs
+        .filter(input => input.checked)
+        .map(input => Number(input.value));
+
+      state.bjjSchedule = bjjScheduleInputs
+        .filter(input => input.checked)
+        .map(input => Number(input.value));
+    }
+
+    function refreshControls() {
+      muayThaiGoal.value = state.muayThaiGoal;
+      bjjGoal.value = state.bjjGoal;
+
+      muayScheduleInputs.forEach(input => {
+        input.checked = state.muaySchedule.includes(Number(input.value));
+      });
+
+      bjjScheduleInputs.forEach(input => {
+        input.checked = state.bjjSchedule.includes(Number(input.value));
+      });
+    }
+
+    function dateKey(year, month, day) {
+      return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+
+    function isToday(year, month, day) {
+      const today = new Date();
+      return (
+        year === today.getFullYear() &&
+        month === today.getMonth() &&
+        day === today.getDate()
+      );
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      monthTitle.textContent = new Intl.DateTimeFormat("en-US", {
+        month: "long",
+        year: "numeric"
+      }).format(currentDate);
+
+      calendar.innerHTML = "";
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        calendar.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const key = dateKey(year, month, day);
+        const entry = state.days[key] || {};
+
+        const cell = document.createElement("div");
+        cell.className = "day";
+        if (isToday(year, month, day)) cell.classList.add("today");
+
+        const number = document.createElement("div");
+        number.className = "day-number";
+        number.textContent = day;
+
+        if (entry.trainingType === "muay") number.classList.add("muay");
+        if (entry.trainingType === "bjj") number.classList.add("bjj");
+
+        number.addEventListener("click", event => {
+          event.stopPropagation();
+          const current = state.days[key] || {};
+
+          if (!current.trainingType) {
+            current.trainingType = "muay";
+          } else if (current.trainingType === "muay") {
+            current.trainingType = "bjj";
+          } else {
+            current.trainingType = "";
+          }
+
+          state.days[key] = current;
+          renderCalendar();
+          setDirtyStatus();
+        });
+
+        cell.appendChild(number);
+
+        const selectedObjective =
+          entry.trainingType === "muay"
+            ? state.muayThaiGoal
+            : entry.trainingType === "bjj"
+            ? state.bjjGoal
+            : "";
+
+        if (selectedObjective) {
+          const objective = document.createElement("div");
+          objective.className = `training-objective ${entry.trainingType}`;
+          objective.textContent = selectedObjective;
+          cell.appendChild(objective);
+        }
+
+        if (entry.task) {
+          const taskRow = document.createElement("label");
+          taskRow.className = "task-row";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = !!entry.taskDone;
+
+          checkbox.addEventListener("click", event => {
+            event.stopPropagation();
+            state.days[key] = {
+              ...entry,
+              taskDone: checkbox.checked
+            };
+            setDirtyStatus();
+          });
+
+          const taskText = document.createElement("span");
+          taskText.className = "task-text";
+          taskText.textContent = entry.task;
+
+          taskRow.appendChild(checkbox);
+          taskRow.appendChild(taskText);
+          cell.appendChild(taskRow);
+        }
+
+        cell.addEventListener("click", () => openModal(key, year, month, day));
+        calendar.appendChild(cell);
+      }
+
+      const totalCells = firstDay + daysInMonth;
+      const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+
+      for (let i = 0; i < remaining; i++) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        calendar.appendChild(empty);
+      }
+    }
+
+    function openModal(key, year, month, day) {
+      selectedDateKey = key;
+      const entry = state.days[key] || {};
+
+      modalDate.textContent = new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      }).format(new Date(year, month, day));
+
+      taskInput.value = entry.task || "";
+      taskDone.checked = !!entry.taskDone;
+      modalBackdrop.classList.add("open");
+      taskInput.focus();
+    }
+
+    function closeModal() {
+      selectedDateKey = null;
+      modalBackdrop.classList.remove("open");
+    }
+
+    refreshControls();
+    renderCalendar();
+  </script>
+</body>
+</html>
