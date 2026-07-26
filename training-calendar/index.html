@@ -91,7 +91,10 @@
           <button id="nextMonth" aria-label="Next month">→</button>
         </div>
         <h2 id="monthTitle"></h2>
-        <div></div>
+        <div class="toolbar-right">
+          <button id="zoomOut" aria-label="Zoom out calendar">-</button>
+          <button id="zoomIn" aria-label="Zoom in calendar">+</button>
+        </div>
       </div>
 
       <div class="weekdays">
@@ -104,7 +107,9 @@
         <div class="weekday">Sat</div>
       </div>
 
-      <div id="calendar" class="calendar"></div>
+      <div id="calendarContainer" class="calendar-container">
+        <div id="calendar" class="calendar"></div>
+      </div>
     </main>
   </div>
 

@@ -233,6 +233,16 @@ main {
   gap: 8px;
 }
 
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-right button {
+  min-width: 36px;
+}
+
 .toolbar h2 {
   margin: 0;
   min-width: 190px;
@@ -279,10 +289,16 @@ main {
   border-right: 0;
 }
 
+.calendar-container {
+  overflow: auto;
+}
+
 .calendar {
   border-top: 1px solid var(--border);
   border-left: 1px solid var(--border);
   background: var(--panel);
+  transform-origin: top center;
+  transition: transform 0.15s ease;
 }
 
 .day {

@@ -19,6 +19,14 @@ const syncStatus = document.getElementById("syncStatus");
 
 const muayScheduleInputs = [...document.querySelectorAll("#muaySchedule input")];
 const bjjScheduleInputs = [...document.querySelectorAll("#bjjSchedule input")];
+const calendarContainer = document.getElementById("calendarContainer");
+const zoomInButton = document.getElementById("zoomIn");
+const zoomOutButton = document.getElementById("zoomOut");
+
+let calendarScale = 1;
+const MIN_SCALE = 0.8;
+const MAX_SCALE = 1.75;
+const SCALE_STEP = 0.1;
 
 document.getElementById("saveCode").addEventListener("click", saveCalendarByCode);
 document.getElementById("loadCode").addEventListener("click", loadCalendarByCode);
@@ -105,6 +113,16 @@ document.getElementById("todayButton").addEventListener("click", () => {
   currentDate = new Date();
   currentDate.setDate(1);
   renderCalendar();
+});
+
+document.getElementById("zoomIn").addEventListener("click", () => {
+  calendarScale = Math.min(MAX_SCALE, calendarScale + SCALE_STEP);
+  updateCalendarScale();
+});
+
+document.getElementById("zoomOut").addEventListener("click", () => {
+  calendarScale = Math.max(MIN_SCALE, calendarScale - SCALE_STEP);
+  updateCalendarScale();
 });
 
 document.getElementById("cancelButton").addEventListener("click", closeModal);
@@ -404,5 +422,10 @@ function closeModal() {
   modalBackdrop.classList.remove("open");
 }
 
+function updateCalendarScale() {
+  calendar.style.transform = `scale(${calendarScale})`;
+}
+
 refreshControls();
+updateCalendarScale();
 renderCalendar();
