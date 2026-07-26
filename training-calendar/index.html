@@ -315,6 +315,11 @@
       color: white;
     }
 
+    .day-number.both {
+      background: rebeccapurple;
+      color: white;
+    }
+
     .task-row {
       display: flex;
       align-items: flex-start;
@@ -347,6 +352,10 @@
 
     .training-objective.bjj {
       color: var(--bjj);
+    }
+
+    .training-objective.both {
+      color: rebeccapurple;
     }
 
     .modal-backdrop {
@@ -607,7 +616,9 @@
         const weekday = new Date(year, month, day).getDay();
         const entry = state.days[key] || {};
 
-        if (state.muaySchedule.includes(weekday)) {
+        if (state.muaySchedule.includes(weekday) && state.bjjSchedule.includes(weekday)) {
+          entry.trainingType = "both";
+        } else if (state.muaySchedule.includes(weekday)) {
           entry.trainingType = "muay";
         } else if (state.bjjSchedule.includes(weekday)) {
           entry.trainingType = "bjj";
@@ -843,6 +854,7 @@
 
         if (entry.trainingType === "muay") number.classList.add("muay");
         if (entry.trainingType === "bjj") number.classList.add("bjj");
+        if (entry.trainingType === "both") number.classList.add("both");
 
         number.addEventListener("click", event => {
           event.stopPropagation();
@@ -852,6 +864,8 @@
             current.trainingType = "muay";
           } else if (current.trainingType === "muay") {
             current.trainingType = "bjj";
+          } else if (current.trainingType === "bjj") {
+            current.trainingType = "both";
           } else {
             current.trainingType = "";
           }
@@ -868,6 +882,8 @@
             ? state.muayThaiGoal
             : entry.trainingType === "bjj"
             ? state.bjjGoal
+            : entry.trainingType === "both"
+            ? [state.muayThaiGoal, state.bjjGoal].filter(Boolean).join(" / ")
             : "";
 
         if (selectedObjective) {
