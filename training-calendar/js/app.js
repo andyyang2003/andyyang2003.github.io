@@ -1,0 +1,408 @@
+// Paste the deployed Supabase Edge Function URL here.
+const API_URL = "https://lgxcmpyjmrjverrhxhtz.supabase.co/functions/v1/training-calendar";
+
+let state = emptyState();
+let currentDate = new Date();
+currentDate.setDate(1);
+let selectedDateKey = null;
+
+const muayThaiGoal = document.getElementById("muayThaiGoal");
+const bjjGoal = document.getElementById("bjjGoal");
+const calendar = document.getElementById("calendar");
+const monthTitle = document.getElementById("monthTitle");
+const modalBackdrop = document.getElementById("modalBackdrop");
+const modalDate = document.getElementById("modalDate");
+const taskInput = document.getElementById("taskInput");
+const taskDone = document.getElementById("taskDone");
+const calendarCode = document.getElementById("calendarCode");
+const syncStatus = document.getElementById("syncStatus");
+
+const muayScheduleInputs = [...document.querySelectorAll("#muaySchedule input")];
+const bjjScheduleInputs = [...document.querySelectorAll("#bjjSchedule input")];
+
+document.getElementById("saveCode").addEventListener("click", saveCalendarByCode);
+document.getElementById("loadCode").addEventListener("click", loadCalendarByCode);
+
+calendarCode.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") loadCalendarByCode();
+});
+
+muayThaiGoal.addEventListener("input", () => {
+  state.muayThaiGoal = muayThaiGoal.value;
+  renderCalendar();
+  setDirtyStatus();
+});
+
+bjjGoal.addEventListener("input", () => {
+  state.bjjGoal = bjjGoal.value;
+  renderCalendar();
+  setDirtyStatus();
+});
+
+muayScheduleInputs.forEach(input => {
+  input.addEventListener("change", () => {
+    updateScheduleState();
+    setDirtyStatus();
+  });
+});
+
+bjjScheduleInputs.forEach(input => {
+  input.addEventListener("change", () => {
+    updateScheduleState();
+    setDirtyStatus();
+  });
+});
+
+document.getElementById("applySchedule").addEventListener("click", () => {
+  updateScheduleState();
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const key = dateKey(year, month, day);
+    const weekday = new Date(year, month, day).getDay();
+    const entry = state.days[key] || {};
+
+    if (state.muaySchedule.includes(weekday) && state.bjjSchedule.includes(weekday)) {
+      entry.trainingType = "both";
+    } else if (state.muaySchedule.includes(weekday)) {
+      entry.trainingType = "muay";
+    } else if (state.bjjSchedule.includes(weekday)) {
+      entry.trainingType = "bjj";
+    } else {
+      entry.trainingType = "";
+    }
+
+    state.days[key] = entry;
+  }
+
+  renderCalendar();
+  setDirtyStatus();
+});
+
+document.getElementById("clearAll").addEventListener("click", () => {
+  if (!confirm("Clear the entire calendar currently shown? This does not erase the server copy unless you press Save afterward.")) return;
+
+  state = emptyState();
+  refreshControls();
+  renderCalendar();
+  setStatus("Calendar cleared locally. Press Save to overwrite the server copy.");
+});
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  renderCalendar();
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
+});
+
+document.getElementById("todayButton").addEventListener("click", () => {
+  currentDate = new Date();
+  currentDate.setDate(1);
+  renderCalendar();
+});
+
+document.getElementById("cancelButton").addEventListener("click", closeModal);
+
+modalBackdrop.addEventListener("click", event => {
+  if (event.target === modalBackdrop) closeModal();
+});
+
+document.getElementById("saveButton").addEventListener("click", () => {
+  if (!selectedDateKey) return;
+
+  state.days[selectedDateKey] = {
+    ...state.days[selectedDateKey],
+    task: taskInput.value.trim(),
+    taskDone: taskDone.checked
+  };
+
+  closeModal();
+  renderCalendar();
+  setDirtyStatus();
+});
+
+function emptyState() {
+  return {
+    muayThaiGoal: "",
+    bjjGoal: "",
+    muaySchedule: [],
+    bjjSchedule: [],
+    days: {}
+  };
+}
+
+function normalizeState(value) {
+  return {
+    muayThaiGoal: typeof value?.muayThaiGoal === "string" ? value.muayThaiGoal : "",
+    bjjGoal: typeof value?.bjjGoal === "string" ? value.bjjGoal : "",
+    muaySchedule: Array.isArray(value?.muaySchedule) ? value.muaySchedule : [],
+    bjjSchedule: Array.isArray(value?.bjjSchedule) ? value.bjjSchedule : [],
+    days: value?.days && typeof value.days === "object" ? value.days : {}
+  };
+}
+
+function normalizeCode(value) {
+  return value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+}
+
+function apiConfigured() {
+  return API_URL.startsWith("https://") && !API_URL.includes("PASTE_");
+}
+
+async function callApi(action, code, extra = {}) {
+  if (!apiConfigured()) {
+    throw new Error("Add your deployed Edge Function URL to index.html first.");
+  }
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, code, ...extra })
+  });
+
+  let result = {};
+  try {
+    result = await response.json();
+  } catch {}
+
+  if (!response.ok) {
+    throw new Error(result.error || `Server returned ${response.status}.`);
+  }
+
+  return result;
+}
+
+async function saveCalendarByCode() {
+  const code = normalizeCode(calendarCode.value);
+
+  if (code.length < 8) {
+    setStatus("Use a code with at least 8 characters.", true);
+    return;
+  }
+
+  calendarCode.value = code;
+  setStatus("Saving full calendar…");
+
+  try {
+    await callApi("save_calendar", code, { calendar: state });
+    setStatus(`Full calendar saved under code: ${code}`);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function loadCalendarByCode() {
+  const code = normalizeCode(calendarCode.value);
+
+  if (code.length < 8) {
+    setStatus("Use a code with at least 8 characters.", true);
+    return;
+  }
+
+  calendarCode.value = code;
+  setStatus("Loading full calendar…");
+
+  try {
+    const result = await callApi("load_calendar", code);
+
+    if (!result.exists) {
+      setStatus("No saved calendar exists for that code.", true);
+      return;
+    }
+
+    state = normalizeState(result.calendar);
+    refreshControls();
+    renderCalendar();
+    setStatus(`Full calendar loaded from code: ${code}`);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+function setDirtyStatus() {
+  setStatus("Unsaved changes. Enter a code and press Save.");
+}
+
+function setStatus(message, isError = false) {
+  syncStatus.textContent = message;
+  syncStatus.style.color = isError ? "#b22222" : "";
+}
+
+function updateScheduleState() {
+  state.muaySchedule = muayScheduleInputs
+    .filter(input => input.checked)
+    .map(input => Number(input.value));
+
+  state.bjjSchedule = bjjScheduleInputs
+    .filter(input => input.checked)
+    .map(input => Number(input.value));
+}
+
+function refreshControls() {
+  muayThaiGoal.value = state.muayThaiGoal;
+  bjjGoal.value = state.bjjGoal;
+
+  muayScheduleInputs.forEach(input => {
+    input.checked = state.muaySchedule.includes(Number(input.value));
+  });
+
+  bjjScheduleInputs.forEach(input => {
+    input.checked = state.bjjSchedule.includes(Number(input.value));
+  });
+}
+
+function dateKey(year, month, day) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function isToday(year, month, day) {
+  const today = new Date();
+  return (
+    year === today.getFullYear() &&
+    month === today.getMonth() &&
+    day === today.getDate()
+  );
+}
+
+function renderCalendar() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  monthTitle.textContent = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric"
+  }).format(currentDate);
+
+  calendar.innerHTML = "";
+
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement("div");
+    empty.className = "day empty";
+    calendar.appendChild(empty);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const key = dateKey(year, month, day);
+    const entry = state.days[key] || {};
+
+    const cell = document.createElement("div");
+    cell.className = "day";
+    if (isToday(year, month, day)) cell.classList.add("today");
+
+    const number = document.createElement("div");
+    number.className = "day-number";
+    number.textContent = day;
+
+    if (entry.trainingType === "muay") number.classList.add("muay");
+    if (entry.trainingType === "bjj") number.classList.add("bjj");
+    if (entry.trainingType === "both") number.classList.add("both");
+
+    number.addEventListener("click", event => {
+      event.stopPropagation();
+      const current = state.days[key] || {};
+
+      if (!current.trainingType) {
+        current.trainingType = "muay";
+      } else if (current.trainingType === "muay") {
+        current.trainingType = "bjj";
+      } else if (current.trainingType === "bjj") {
+        current.trainingType = "both";
+      } else {
+        current.trainingType = "";
+      }
+
+      state.days[key] = current;
+      renderCalendar();
+      setDirtyStatus();
+    });
+
+    cell.appendChild(number);
+
+    const selectedObjective =
+      entry.trainingType === "muay"
+        ? state.muayThaiGoal
+        : entry.trainingType === "bjj"
+        ? state.bjjGoal
+        : entry.trainingType === "both"
+        ? [state.muayThaiGoal, state.bjjGoal].filter(Boolean).join(" / ")
+        : "";
+
+    if (selectedObjective) {
+      const objective = document.createElement("div");
+      objective.className = `training-objective ${entry.trainingType}`;
+      objective.textContent = selectedObjective;
+      cell.appendChild(objective);
+    }
+
+    if (entry.task) {
+      const taskRow = document.createElement("label");
+      taskRow.className = "task-row";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = !!entry.taskDone;
+
+      checkbox.addEventListener("click", event => {
+        event.stopPropagation();
+        state.days[key] = {
+          ...entry,
+          taskDone: checkbox.checked
+        };
+        setDirtyStatus();
+      });
+
+      const taskText = document.createElement("span");
+      taskText.className = "task-text";
+      taskText.textContent = entry.task;
+
+      taskRow.appendChild(checkbox);
+      taskRow.appendChild(taskText);
+      cell.appendChild(taskRow);
+    }
+
+    cell.addEventListener("click", () => openModal(key, year, month, day));
+    calendar.appendChild(cell);
+  }
+
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+
+  for (let i = 0; i < remaining; i++) {
+    const empty = document.createElement("div");
+    empty.className = "day empty";
+    calendar.appendChild(empty);
+  }
+}
+
+function openModal(key, year, month, day) {
+  selectedDateKey = key;
+  const entry = state.days[key] || {};
+
+  modalDate.textContent = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date(year, month, day));
+
+  taskInput.value = entry.task || "";
+  taskDone.checked = !!entry.taskDone;
+  modalBackdrop.classList.add("open");
+  taskInput.focus();
+}
+
+function closeModal() {
+  selectedDateKey = null;
+  modalBackdrop.classList.remove("open");
+}
+
+refreshControls();
+renderCalendar();
