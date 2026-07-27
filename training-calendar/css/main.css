@@ -289,16 +289,10 @@ main {
   border-right: 0;
 }
 
-.calendar-container {
-  overflow: auto;
-}
-
 .calendar {
   border-top: 1px solid var(--border);
   border-left: 1px solid var(--border);
   background: var(--panel);
-  transform-origin: top center;
-  transition: transform 0.15s ease;
 }
 
 .day {
